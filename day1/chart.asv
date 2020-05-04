@@ -1,0 +1,23 @@
+load data10.mat
+plot(data(:,1),data(:,2))
+hold on
+load data9.mat
+plot(data(:,1),data(:,2))
+hold on
+load data8.mat
+plot(data(:,1),data(:,2))
+hold on
+load data7.mat
+plot(data(:,1),data(:,2))
+hold on
+load data6.mat
+plot(data(:,1),data(:,2))
+hold on
+load data5.mat
+plot(data(:,1),data(:,2))
+hold on
+load data0.mat
+plot(data(:,1),data(:,2))
+hold on
+title("fig3-1")
+legend('10','9','8','7','6','5','0')
