@@ -1,0 +1,41 @@
+%设定的参数
+f_n=5;  %一个区域固定的信道数
+call_n = 100; %生成的call的次数
+
+d_n = 160 - f_n * 16; %一个区域的动态信道数
+channels = zeros([160,1]);
+area = zeros([27,27]);
+calls = zeros([call_n , 4])
+noreply=0; 
+traffic_offer=0;
+
+ii=0;
+while ii ~= call_n
+   ii = ii + 1;
+   calls(ii , 1) = randi(3,15);
+   traffic_offer = traffic_offer + calls(ii).times;
+   calls(ii , 2) = randi(1,27);
+   calls(ii , 3) = randi(1.27);
+   if area(calls(ii).x,calls(ii).y)==f_n%如果没有固定信道
+       if d_n>=0%如果有动态信道
+           d_n=d_n-1;
+           calls(ii , 4)=1;%采用固定信道
+       else
+           noreply = noreply+1;
+       end
+   else
+       area(calls(ii , 2),calls(ii ,3)) = area(calls(ii , 2),calls(ii , y))+1;
+       calls(ii).type = 0;%采用固定信道
+   end
+   for kk = 1:call_n%处理其他的call
+       if calls(kk).times >= 0
+           calls(kk).times = calls(kk).times-1;
+           if calls(kk).type == 0
+               area(calls(ii).x,calls(ii).y) = area(calls(ii).x,calls(ii).y) - 1;
+           else
+               d_n = d_n + 1;
+           end
+       end
+   end  
+end
+
