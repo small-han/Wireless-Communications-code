@@ -1,6 +1,7 @@
 %设定的参数
 function data=code(f_n)
-d_n = (160 - str2num( f_n) * 16) * 30; %一个区域的动态信道数
+f_n=str2num(f_n);
+
 call_n = 0; %生成的call的次数
 
 iii=0;
@@ -9,11 +10,15 @@ data= zeros([100,4]);
 while call_n<=10000
     call_n=call_n+100;
     calls = zeros([call_n , 4]);%1:times 2:x 3:y 4:type
+    d_n = (160 -  f_n * 16) * 25; %一个区域的动态信道数
     iii=iii+1;
     area = zeros([27,27]);
     noreply=0;
     traffic_offer=0;
     traffic_carried=0;
+    dy=0;
+    dy2fixed=0;
+    fixed=0;
     ii=0;
     jj=0;
     while ii ~= call_n
@@ -48,6 +53,7 @@ while call_n<=10000
             if d_n>=0%如果有动态信道
                 d_n=d_n-1;
                 calls(ii , 4)=1;%采用动态信道
+                dy=dy+1;
             else
                 noreply = noreply+1;
                 calls(ii , 1)=-1;
@@ -55,9 +61,10 @@ while call_n<=10000
         else
             area(calls(ii , 2),calls(ii ,3)) = area(calls(ii , 2),calls(ii , 3))+1;
             calls(ii , 4) = 0;%采用固定信道
+            fixed=fixed+1;
         end
         
-        if jj==200
+        if jj==700
             jj=0;
             for kk = 1:call_n%处理其他的call
                 if calls(kk , 2)<18 && calls(kk , 2)>9 && calls(kk , 3)<18 && calls(kk , 3)>9
@@ -71,12 +78,18 @@ while call_n<=10000
                             area(calls(kk , 2),calls(kk , 3)) = area(calls(kk , 2),calls(kk , 3)) - 1;
                         else
                             d_n = d_n+1;
+                            if area(calls(kk , 2),calls(kk , 3))~=0
+                                dy2fixed=dy2fixed+1;
+                            end
                         end
                     else
                         if calls(kk, 4) == 0
                             area(calls(kk , 2),calls(kk , 3)) = area(calls(kk , 2),calls(kk , 3)) - 1;
                         else
                             d_n = d_n+1;
+                            if area(calls(kk , 2),calls(kk , 3))~=0
+                                dy2fixed=dy2fixed+1;
+                            end
                         end
                         calls(kk , 2) = calls(kk , 2) + calls(kk , 5);
                         calls(kk , 3) = calls(kk , 3) + calls(kk , 6);
@@ -85,10 +98,11 @@ while call_n<=10000
                             continue;
                         end
                         
-                        if area(calls(kk , 2),calls(kk , 3))==f_n%如果没有固定信道
+                        if area(calls(kk , 2),calls(kk , 3))== f_n%如果没有固定信道
                             if d_n>=0%如果有动态信道
                                 d_n=d_n-1;
                                 calls(kk , 4)=1;%采用动态信道
+                                dy=dy+1;
                             else
                                 noreply = noreply+1;
                                 calls(kk , 1)=-1;
@@ -96,6 +110,7 @@ while call_n<=10000
                         else
                             area(calls(kk , 2),calls(kk ,3)) = area(calls(kk , 2),calls(kk , 3))+1;
                             calls(kk , 4) = 0;%采用固定信道
+                            fixed=fixed+1;
                         end
                     end
                 end
@@ -108,6 +123,9 @@ while call_n<=10000
     data(iii,2)=noreply;
     data(iii,3)=call_n-noreply;
     data(iii,4)=traffic_offer;
+    data(iii,5)=dy;
+    data(iii,6)=dy2fixed;
+    data(iii,7)=fixed;
     
 end
 end
